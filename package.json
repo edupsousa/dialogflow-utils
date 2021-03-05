@@ -10,6 +10,7 @@
   "scripts": {
     "start": "ts-node src/index.ts",
     "build": "tsc",
+    "local-install": "npm run build && npm install -g",
     "test": "jest --coverage",
     "lint": "eslint 'src/**/*.ts' --quiet --fix",
     "format": "prettier --write \"src/**/*.ts\"",

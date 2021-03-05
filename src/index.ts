@@ -13,7 +13,7 @@ console.log(chalk.green(figlet.textSync('df-utils', { horizontalLayout: 'full' }
 program.version('0.0.1').description('Utilities for DialogFlow backup files');
 
 program
-  .command('graph <agent backup f> <graph.json>')
+  .command('graph <agent.zip> <graph.json>')
   .action(async (agentPath: string, graphPath: string) => createGraph(agentPath, graphPath));
 
 program.parse(process.argv);
