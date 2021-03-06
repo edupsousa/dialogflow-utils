@@ -59,7 +59,6 @@
     "testEnvironment": "node"
   },
   "devDependencies": {
-    "@types/clear": "^0.1.1",
     "@types/figlet": "^1.2.1",
     "@types/jest": "^26.0.20",
     "@types/node": "^14.14.31",
@@ -81,9 +80,8 @@
   },
   "dependencies": {
     "chalk": "^4.1.0",
-    "clear": "^0.1.0",
     "commander": "^7.1.0",
-    "dialogflow-import": "^0.1.0",
+    "dialogflow-import": "^0.1.2",
     "figlet": "^1.5.0"
   }
 }

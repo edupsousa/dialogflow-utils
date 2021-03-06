@@ -1,39 +1,8 @@
 import chalk from 'chalk';
-import { Agent, importAgent, Intent } from 'dialogflow-import';
+import { Intent } from 'dialogflow-import';
 import { promises as fs } from 'fs';
 import { readAgentFile } from './readAgentFile';
-
-type ContextMap = {
-  [key: string]: {
-    input: string[];
-    output: string[];
-  };
-};
-
-function listContexts(intents: Intent[]): ContextMap {
-  return intents.reduce((map, intent) => {
-    const addContextToMap = (contextName: string) => {
-      if (!map[contextName]) map[contextName] = { input: [], output: [] };
-    };
-
-    intent.contexts.forEach((inputContext) => {
-      const contextName = inputContext.toLowerCase();
-      addContextToMap(contextName);
-      map[contextName].input.push(intent.name);
-    });
-
-    intent.responses.forEach((response) => {
-      response.affectedContexts.forEach((outputContext) => {
-        if (outputContext.lifespan === 0) return;
-        const contextName = outputContext.name.toLowerCase();
-        addContextToMap(contextName);
-        map[contextName].output.push(intent.name);
-      });
-    });
-
-    return map;
-  }, {} as ContextMap);
-}
+import { ContextMap, createContextMap } from './utils';
 
 type NetworkNode = {
   id: number;
@@ -97,7 +66,7 @@ export async function createGraph(agentPath: string, graphPath: string): Promise
     const agent = await readAgentFile(agentPath);
     const intents = Object.values(agent.intents);
     console.log(`- Exporting ${intents.length} intents.`);
-    const contexts = listContexts(intents);
+    const contexts = createContextMap(intents);
     console.log(`- Exporting ${Object.keys(contexts).length} contexts.`);
     const nodes = [...getIntentNodes(intents), ...getContextNodes(Object.keys(contexts), intents.length)];
     const edges = createEdges(nodes, contexts);
