@@ -14,7 +14,10 @@ program.version('0.0.1').description('Utilities for DialogFlow backup files');
 
 program
   .command('graph <agent.zip> <graph.json>')
-  .action(async (agentPath: string, graphPath: string) => graph.createGraph(agentPath, graphPath));
+  .option('-i, --intents', 'Remove context nodes and link intent directly to intent.')
+  .action(async (agentPath: string, graphPath: string, options: { intents?: boolean }) => {
+    graph.createGraph(agentPath, graphPath, options.intents);
+  });
 
 const ctxCommand = program.command('contexts');
 ctxCommand

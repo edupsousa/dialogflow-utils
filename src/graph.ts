@@ -52,6 +52,25 @@ function createEdges(nodes: NetworkNode[], contexts: ContextMap): NetworkEdge[] 
   return edges;
 }
 
+function createIntent2IntentEdges(nodes: NetworkNode[], contexts: ContextMap): NetworkEdge[] {
+  const edges: NetworkEdge[] = [];
+
+  for (const contextName in contexts) {
+    const { input, output } = contexts[contextName];
+    output.forEach((outputIntent) => {
+      const fromIntentId = getNodeId(nodes, outputIntent, 'intent');
+      input.forEach((inputIntent) => {
+        const toIntentId = getNodeId(nodes, inputIntent, 'intent');
+        edges.push({
+          from: fromIntentId,
+          to: toIntentId,
+        });
+      });
+    });
+  }
+  return edges;
+}
+
 function exportNodes(nodes: NetworkNode[]): any[] {
   return nodes.map(({ id, label, type }) => ({
     id,
@@ -60,7 +79,7 @@ function exportNodes(nodes: NetworkNode[]): any[] {
   }));
 }
 
-export async function createGraph(agentPath: string, graphPath: string): Promise<void> {
+export async function createGraph(agentPath: string, graphPath: string, intent2Intent = false): Promise<void> {
   console.log(`- Creating graph from ${agentPath}...`);
   try {
     const agent = await readAgentFile(agentPath);
@@ -68,8 +87,11 @@ export async function createGraph(agentPath: string, graphPath: string): Promise
     console.log(`- Exporting ${intents.length} intents.`);
     const contexts = createContextMap(intents);
     console.log(`- Exporting ${Object.keys(contexts).length} contexts.`);
-    const nodes = [...getIntentNodes(intents), ...getContextNodes(Object.keys(contexts), intents.length)];
-    const edges = createEdges(nodes, contexts);
+    const nodes = [...getIntentNodes(intents)];
+    if (!intent2Intent) nodes.push(...getContextNodes(Object.keys(contexts), intents.length));
+    let edges: NetworkEdge[];
+    if (intent2Intent) edges = createIntent2IntentEdges(nodes, contexts);
+    else edges = createEdges(nodes, contexts);
     console.log(`- Writing ${nodes.length} nodes and ${edges.length} edges to ${graphPath}`);
     console.log('- Done');
     await fs.writeFile(graphPath, JSON.stringify({ nodes: exportNodes(nodes), edges }));
