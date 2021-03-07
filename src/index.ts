@@ -22,6 +22,16 @@ ctxCommand
   .action(async (inputPath, outputPath) => contexts.toLowercase(inputPath, outputPath));
 
 const intentsCmd = program.command('intents');
-intentsCmd.command('list <agent.zip>').action(async (agentPath) => intents.list(agentPath));
+intentsCmd
+  .command('list <agent.zip>')
+  .option('-p, --printer <printer>', 'Intent printers: affectedContexts')
+  .option('-f, --filter <filter>', 'Intent filters: moreThanOneAffectedContext')
+  .action(async (agentPath, options) => {
+    let filter: intents.FilterIntentsFn | undefined;
+    if (options.filter) filter = intents.intentFilters[options.filter];
+    let printer: intents.PrintIntentFn | undefined;
+    if (options.printer) printer = intents.intentPrinters[options.printer];
+    intents.list(agentPath, filter, undefined, printer);
+  });
 
 program.parse(process.argv);
