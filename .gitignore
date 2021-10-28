@@ -103,9 +103,6 @@ dist
 # TernJS port file
 .tern-port
 
-# Jest Coverage Report
-coverage/
-
 # Sample Agents for testing and examples
 sample/*.zip
 sample/*/
