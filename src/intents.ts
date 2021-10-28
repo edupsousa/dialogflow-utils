@@ -36,6 +36,16 @@ export const intentPrinters: Record<string, PrintIntentFn> = {
     });
     return out.join('\n');
   },
+  responseMessageSpeech: (i) => {
+    const out: string[] = [];
+    out.push(i.name);
+    i.responses.forEach((r) => {
+      r.messages.forEach((m) => {
+        if (m.speech) out.push(`\t${m.speech}`);
+      });
+    });
+    return out.join('\n');
+  },
 };
 
 export const intentSorters: Record<string, SortIntentFn> = {

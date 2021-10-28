@@ -27,7 +27,7 @@ ctxCommand
 const intentsCmd = program.command('intents');
 intentsCmd
   .command('list <agent.zip>')
-  .option('-p, --printer <printer>', 'Intent printers: affectedContexts')
+  .option('-p, --printer <printer>', 'Intent printers: affectedContexts, responseMessageSpeech')
   .option('-f, --filter <filter>', 'Intent filters: moreThanOneAffectedContext')
   .action(async (agentPath, options) => {
     let filter: intents.FilterIntentsFn | undefined;
