@@ -5,6 +5,7 @@ import { Command } from 'commander';
 import * as graph from './graph';
 import * as contexts from './contexts';
 import * as intents from './intents';
+import * as userSays from './userSays';
 
 const program = new Command();
 
@@ -36,5 +37,10 @@ intentsCmd
     if (options.printer) printer = intents.intentPrinters[options.printer];
     intents.list(agentPath, filter, undefined, printer);
   });
+
+const userSaysCmd = program.command('user-says');
+userSaysCmd.command('list <agent.zip>').action(async (agentPath) => {
+  userSays.list(agentPath);
+});
 
 program.parse(process.argv);

@@ -2,7 +2,7 @@ import { Intent } from 'dialogflow-import';
 import { readAgentFile } from './readAgentFile';
 
 export type FilterIntentsFn = (intent: Intent) => boolean;
-export type PrintIntentFn = (intent: Intent) => string;
+export type PrintIntentFn = (intent: Intent) => string[];
 export type SortIntentFn = (a: Intent, b: Intent) => -1 | 0 | 1;
 
 export async function list(
@@ -18,14 +18,14 @@ export async function list(
   if (filterIntents) intents = intents.filter(filterIntents);
   intents = intents.sort(sortIntents);
 
-  const output: string[] = intents.map(printIntent);
+  const output: string[] = [...intents.map(printIntent).flat()];
   console.log(output.join('\n'));
 
   console.log('\n- Done');
 }
 
 export const intentPrinters: Record<string, PrintIntentFn> = {
-  name: (i) => i.name,
+  name: (i) => [i.name],
   affectedContexts: (i) => {
     const out: string[] = [];
     out.push(i.name);
@@ -34,17 +34,17 @@ export const intentPrinters: Record<string, PrintIntentFn> = {
         if (ctx.lifespan > 0) out.push(`\t${ctx.name}`);
       });
     });
-    return out.join('\n');
+    return out;
   },
   responseMessageSpeech: (i) => {
     const out: string[] = [];
     out.push(i.name);
     i.responses.forEach((r) => {
       r.messages.forEach((m) => {
-        if (m.speech) out.push(`\t${m.speech}`);
+        if (m.speech) m.speech.forEach((s) => out.push(`\t${s.replace(/\n|\t/g, ' ').replace(/\s+/g, ' ')}`));
       });
     });
-    return out.join('\n');
+    return out;
   },
 };
 
